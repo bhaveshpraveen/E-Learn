@@ -10,6 +10,7 @@
                 <p>
                     <a href="{% url "course:course_edit" course.id %}">Edit</a>
                     <a href="{% url "course:course_delete" course.id %}">Delete</a>
+                    <a href="{% url "course:course_module_update" course.id %}">Edit modules</a>
                 </p>
             </div>
             {% empty %}

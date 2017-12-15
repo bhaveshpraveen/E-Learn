@@ -1,10 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import redirect, get_object_or_404, render
 from django.views.generic.list import ListView
+from django.views.generic.base import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 
 from .models import Course
+from .forms import ModuleFormSet
 
 
 # This class can be used for any views, given the model contains the 'owner' attribute
@@ -51,3 +54,27 @@ class CourseDeleteView(PermissionRequiredMixin, OwnerCourseMixin, DeleteView):
     template_name = 'courses/manage/course/delete.html'
     success_url = reverse_lazy('course:manage_course_list')
     permission_required = 'courses.delete_course'
+
+
+class CourseModuleUpdateView(View):
+    template_name = 'courses/manage/module/formset.html'
+    course = None
+
+    def get_formset(self, data=None):
+        return ModuleFormSet(instance=self.course, data=data)
+
+    # Before being assigned to get or post or other methods, the dispatch method is called
+    def dispatch(self, request, pk):
+        self.course = get_object_or_404(Course, id=pk, owner=request.user)
+        return super(CourseModuleUpdateView, self).dispatch(request, pk)
+
+    def get(self, request, *args, **kwargs):
+        formset = self.get_formset()
+        return render(request, self.template_name, {'course': self.course, 'formset': formset})
+
+    def post(self, request, *args, **kwargs):
+        formset = self.get_formset(data=request.POST)
+        if formset.is_valid():
+            formset.save()
+            return redirect('course:manage_course_list')
+        return render(request, self.template_name, {'course': self.course, 'formset': formset})
