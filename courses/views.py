@@ -1,9 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 
 from .models import Course
+
 
 # This class can be used for any views, given the model contains the 'owner' attribute
 class OwnerMixin(object):
@@ -30,21 +32,22 @@ class OwnerEditMixin(object):
         return super(OwnerEditMixin, self).form_valid(form)
 
 
-class OwnerCourseEditMixin(OwnerCourseMixin, OwnerEditMixin):
+class OwnerCourseEditMixin(LoginRequiredMixin, OwnerCourseMixin, OwnerEditMixin):
     # the fields of the model to build the ModelForm of the CreateView and UpdateView
     fields = ('subject', 'title', 'slug', 'overview')
     success_url = reverse_lazy('manage_course_list')
     template_name = 'courses/manage/course/form.html'
 
 
-class CourseCreateView(OwnerCourseEditMixin, CreateView):
-    pass
+class CourseCreateView(PermissionRequiredMixin, OwnerCourseEditMixin, CreateView):
+    permission_required = 'courses.add_course'
 
 
-class CourseUpdateView(OwnerCourseEditMixin, UpdateView):
-    pass
+class CourseUpdateView(PermissionRequiredMixin, OwnerCourseEditMixin, UpdateView):
+    permission_required = 'courses.change_course'
 
 
-class CourseDeleteView(OwnerCourseMixin, DeleteView):
+class CourseDeleteView(PermissionRequiredMixin, OwnerCourseMixin, DeleteView):
     template_name = 'courses/manage/course/delete.html'
     success_url = reverse_lazy('manage_course_list')
+    permission_required = 'courses.delete_course'
