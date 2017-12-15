@@ -35,7 +35,7 @@ class OwnerEditMixin(object):
 class OwnerCourseEditMixin(LoginRequiredMixin, OwnerCourseMixin, OwnerEditMixin):
     # the fields of the model to build the ModelForm of the CreateView and UpdateView
     fields = ('subject', 'title', 'slug', 'overview')
-    success_url = reverse_lazy('manage_course_list')
+    success_url = reverse_lazy('course:manage_course_list')
     template_name = 'courses/manage/course/form.html'
 
 
@@ -49,5 +49,5 @@ class CourseUpdateView(PermissionRequiredMixin, OwnerCourseEditMixin, UpdateView
 
 class CourseDeleteView(PermissionRequiredMixin, OwnerCourseMixin, DeleteView):
     template_name = 'courses/manage/course/delete.html'
-    success_url = reverse_lazy('manage_course_list')
+    success_url = reverse_lazy('course:manage_course_list')
     permission_required = 'courses.delete_course'
