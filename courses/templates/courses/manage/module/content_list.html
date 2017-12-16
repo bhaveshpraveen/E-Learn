@@ -38,7 +38,7 @@
                 <div data-id="{{ content.id }}">
                     {% with item=content.item %}
                         <p> {{ item }} {{ item|model_name }}</p>
-                        <a href="{% url "course:module_content_update" module.id item|model_name %}">Edit</a>
+                        <a href="{% url "course:module_content_update" module.id item|model_name item.id %}">Edit</a>
                         <form action="{% url "course:module_content_delete" content.id %}" method="post">
                             {% csrf_token %}
                             <input type="submit" value="Delete">

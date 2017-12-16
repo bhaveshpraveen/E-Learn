@@ -115,7 +115,7 @@ class ContentCreateUpdateView(View):
                                                     'object': self.obj})
 
     def post(self, request, module_id, model_name, id=None):
-        form = self.get_form(model_name, instance=self.obj, data=request.POST, files=request.FILES)
+        form = self.get_form(self.model, instance=self.obj, data=request.POST, files=request.FILES)
 
         if form.is_valid():
             obj = form.save(commit=False)
@@ -126,7 +126,7 @@ class ContentCreateUpdateView(View):
                 # new object
                 Content.objects.create(module=self.module, item=obj)
 
-            return redirect('module_content_list', self.module.id)
+            return redirect('course:module_content_list', self.module.id)
 
         return render(request, self.template_name, {'form': form,
                                                     'object': self.obj})
@@ -134,11 +134,11 @@ class ContentCreateUpdateView(View):
 
 class ContentDeleteView(View):
     def post(self, request, id):
-        content = get_object_or_404(Content, id=id, module__course__owner=request.owner)
+        content = get_object_or_404(Content, id=id, module__course__owner=request.user)
         module = content.module
         content.item.delete()
         content.delete()
-        return redirect('module_content_list', module.id)
+        return redirect('course:module_content_list', module.id)
 
 
 class ModuleContentListView(View):
