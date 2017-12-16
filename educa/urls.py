@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/login/$', auth_views.login, name='login'),
     url(r'^accounts/logout/$', auth_views.logout, name='logout'),
+    url(r'^accounts/', include('registration.backends.hmac.urls')),
     url(r'course/', include(courses_urls, app_name='course', namespace='course')),
 ]
